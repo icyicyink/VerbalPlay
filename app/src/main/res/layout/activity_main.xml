@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- This container will hold your GameSurface -->
+    <FrameLayout
+        android:id="@+id/game_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <ImageButton
+        android:id="@+id/wand_button"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:backgroundTint="#F9F8FA"
+        android:src="@drawable/wand"
+        android:layout_gravity="right|center"
+        android:layout_marginBottom="20dp"
+        android:text="Action" />
+
+    <EditText
+        android:id="@+id/edtSpeechText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginRight="15dp"
+        android:layout_gravity="top|center"
+        android:hint="Text output of recorded audio"
+        android:padding="10dp" />
+
+    <!-- Menu Container - overlays on top of the game -->
+    <FrameLayout
+        android:id="@+id/menu_frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</FrameLayout>
