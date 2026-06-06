@@ -45,12 +45,15 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
     private long levelStartTime = 0;
     private long timeSinceLevelStart = 0;
 
+    private boolean shake = false;
+    private long shakeTimeEnd = 0;
+
     // Todo refactor all this text
     private final String[] instLv1 = {
             "You find yourself in a dark forest.",
             "Hold the wand and it will listen.",
             "Release to cast.",
-            "Say 'FIRE' to cast fireball!",
+            "'FIRE' will cast fireball!",
             "They are coming..."
     };
 
@@ -68,6 +71,7 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
 
     private final String[] instLv4 = {
             "You see a massive wave of enemies approaching.",
+            "Try 'EARTHQUAKE' to damage all foes at once!",
             "They are coming..."
     };
 
@@ -120,7 +124,7 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
     private float[] bgOffsets = new float[5];
     private float[] bgSpeeds = {3f, 2f, 1f, 0.5f, 0.2f};
 
-    private BackgroundObject campfire;
+    private NonInteractableObject campfire;
 
     AudioManagerCustom audioManager;
 
@@ -182,7 +186,7 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
                     if (isPuzzleLevel && currentPuzzleAnswer != null) {
                         if (result.equalsIgnoreCase(currentPuzzleAnswer)) {
                             levelComplete = true;
-                            //Todo switch with level complete sound
+                            //Todo Stretch implement level complete sounds
                         }
                         return;
                     }
@@ -212,6 +216,15 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
                                 tallestEnemy.takeDamage(50);
                                 audioManager.playLightning();
                                 spawnEffectAtEnemy(tallestEnemy, Spells.LIGHTNING);
+                            }
+                        }
+                    }
+                    else if (result.equalsIgnoreCase("earthquake")) {
+                        if (currentLevel > 3) {
+                            audioManager.playEarthquake();
+                            shake(2000);
+                            for (Enemy enemy : enemyList) {
+                                enemy.takeDamage(25);
                             }
                         }
                     }
@@ -434,9 +447,28 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
          }
     }
 
+    public void shake(long duration) {
+        shake = true;
+        shakeTimeEnd = System.currentTimeMillis() + duration;
+    }
+
     @Override
     public void draw(Canvas canvas) {
         super.draw(canvas);
+        canvas.save();
+
+        if (shake) {
+            long now = System.currentTimeMillis();
+            if (now < shakeTimeEnd) {
+                float shakePixels = 25f;
+                float x = (float)((Math.random() - 0.5) * 2 * shakePixels);
+                float y = (float)((Math.random() - 0.5) * 2 * shakePixels);
+                canvas.translate(x, y);
+            }
+            else {
+                shake = false;
+            }
+        }
 
         canvas.drawColor(Color.BLACK);
 
@@ -528,6 +560,7 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
                 canvas.drawText("Tap to Restart", getWidth() / 2f, getHeight() / 2f + 120, instructionPaint);
             }
         }
+        canvas.restore();
     }
 
     private void drawLevelDisplay(Canvas canvas) {
@@ -642,6 +675,7 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
          currentPuzzle = null;
          currentPuzzleAnswer = null;
          audioManager.release();
+         shake = false;
 
          initEntities();
      }
@@ -663,6 +697,7 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
          isPuzzleLevel = false;
          currentPuzzle = null;
          currentPuzzleAnswer = null;
+         shake = false;
 
          initEntities();
      }
@@ -682,7 +717,7 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
         float mushroomScaleFactor = playerScaleFactor * 2;
         float bossScaleFactor = playerScaleFactor * 3;
 
-        campfire  = new BackgroundObject(campfireBitmap, 1, 6, (float) (viewWidth * 0.5), (float) (viewHeight * 0.5),6, campfireScaleFactor);
+        campfire  = new NonInteractableObject(campfireBitmap, 1, 6, (float) (viewWidth * 0.5), (float) (viewHeight * 0.5),6, campfireScaleFactor);
         // Ground = 90% down screen
         int groundY = (int) (viewHeight * 0.9);
 

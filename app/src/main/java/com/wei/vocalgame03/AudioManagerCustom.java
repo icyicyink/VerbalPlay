@@ -11,6 +11,7 @@ public class AudioManagerCustom {
     private final Context context;
     private int soundIdFireball;
     private int soundIdLightning;
+    private int soundIdEarthquake;
     private MediaPlayer bgmPlayer;
 
     private float volumeLeft = 0.8f;
@@ -24,6 +25,7 @@ public class AudioManagerCustom {
                 .build();
         soundIdFireball = soundPool.load(context, R.raw.fireball, 1);
         soundIdLightning = soundPool.load(context, R.raw.lightning, 1);
+        soundIdEarthquake = soundPool.load(context, R.raw.earthquake, 1);
     }
 
     public static AudioManagerCustom get(Context ctx) {
@@ -39,6 +41,10 @@ public class AudioManagerCustom {
 
     public void playLightning() {
         soundPool.play(soundIdLightning, volumeLeft, volumeRight, 1, 0, 1f);
+    }
+
+    public void playEarthquake() {
+        soundPool.play(soundIdEarthquake, volumeLeft + 0.3f, volumeRight + 0.3f, 1, 0, 1f);
     }
 
     public void playBgm(int resId) {
